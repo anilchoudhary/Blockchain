@@ -1,0 +1,168 @@
+BYFN Chaincode
+The chaincode in Golang used in BYFN (Build Your First Network) is located in the chaincode_example02.go file and localed in hyperledger-binaries/fabric-samples/chaincode/chaincode_example02/go/ directory
+
+cd hyperledger-binaries/fabric-samples
+
+more chaincode/chaincode_example02/go/chaincode_example02.go
+
+The same chaincode file is also deployed on the BYFN CLI conainer:
+
+echo $GOPATH /opt/gopath
+
+ls -l $GOPATH/src/github.com/chaincode/chaincode_example02/go\
+   /chaincode_example02.go
+
+Install Chaincode
+1. Verify the chaincode source file on the BYFN CLI container
+
+docker exec -it cli bash
+
+echo $GOPATH /opt/gopath
+
+ls -l $GOPATH/src/github.com/chaincode/chaincode_example02/go\
+   /chaincode_example02.go
+
+Install the chaincode
+
+echo $CORE_PEER_ADDRESS
+
+peer chaincode install -n mycc -v 1.0 -l node \
+   -p /opt/gopath/src/github.com/chaincode/chaincode_example02/node/
+
+Verify 
+
+peer chaincode list --installed
+
+
+===============================================================================
+
+Instainsiate
+
+docker exec -it cli bash
+
+
+echo $CORE_PEER_ADDRESS
+
+peer chaincode list --installed
+
+peer chaincode instantiate -o orderer.example.com:7050 --tls \
+   --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto\
+   /ordererOrganizations/example.com/orderers/orderer.example.com/msp\
+   /tlscacerts/tlsca.example.com-cert.pem -C mychannel -n mycc -v 1.0 \
+   -c '{"Args":["init","a", "100", "b","200"]}' -P "AND ('Org1MSP.peer','Org2MSP.peer')"
+
+peer chaincode list -C mychannel --instantiated
+
+============================================================================
+
+Query On Chaincode
+
+An instance of a chaincode can be viewed as an object of a class in an execution environment. It can hold properties.
+
+You can run the "peer chaincode query" command to query the current value of a given property of a given chaincode instance
+
+docker exec -it cli bash
+
+echo $CORE_PEER_ADDRESS
+
+peer chaincode list -C mychannel --instantiated
+
+Query property "a" and "b" of instantiated chaincode "mycc":
+
+peer chaincode query -C mychannel -n mycc -c '{"Args":["query","a"]}'
+
+peer chaincode query -C mychannel -n mycc -c '{"Args":["query","b"]}'
+
+peer chaincode query -C mychannel -n mycc -c '{"Args":["query","c"]}'
+
+peer chaincode invoke -o orderer.example.com:7050 --tls true \
+   --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto\
+   /ordererOrganizations/example.com/orderers/orderer.example.com/msp\
+   /tlscacerts/tlsca.example.com-cert.pem -C mychannel -n mycc \
+   --peerAddresses peer0.org1.example.com:7051 --tlsRootCertFiles \
+   /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations\
+   /org1.example.com/peers/peer0.org1.example.com/tls/ca.crt \
+   --peerAddresses peer0.org2.example.com:7051 --tlsRootCertFiles \
+   /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations\
+   /org2.example.com/peers/peer0.org2.example.com/tls/ca.crt \
+   -c '{"Args":["invoke","a","b","10"]}'
+
+Connect to the BYFN CLI container and check the default peer
+
+docker exec -it cli bash
+
+echo $CORE_PEER_ADDRESS
+
+peer node status
+
+
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger\
+   /fabric/peer/crypto/peerOrganizations/org2.example.com/users\
+   /Admin@org2.example.com/msp CORE_PEER_ADDRESS=peer0.org2.example.com:7051 \
+   CORE_PEER_LOCALMSPID=Org2MSP CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src\
+   /github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org2.example.com\
+   /peers/peer0.org2.example.com/tls/ca.crt \
+
+chaincode containers with this command
+
+docker ps --all
+
+
+docker stop dev-peer0.org1.example.com-mycc-1.0
+
+docker star dev-peer0.org1.example.com-mycc-1.0
+
+
+Uninstall Chaincode on BYFN Peers - TRY OUT
+
+echo $CORE_PEER_ADDRESS 
+
+peer chaincode install -n mycc -v 2.0 -l golang \
+   -p github.com/chaincode/chaincode_example02/go/
+
+Verify the chaincode instance
+peer chaincode list --instantiated -C mychannel
+
+Remove Older Versions Chaincode
+
+docker ps --all | grep chaincode
+
+Stop the ChainCode 
+
+docker stop dev-peer0.org1.example.com-mycc-1.0
+docker stop dev-peer0.org2.example.com-mycc-1.0
+
+Remove version 1.0 chaincode c
+docker rm dev-peer0.org1.example.com-mycc-1.0
+docker rm dev-peer0.org2.example.com-mycc-1.0
+
+
+docker ps -all | grep chaincode
+
+Verify again - docker exec -it cli bash 
+
+peer chaincode
+
+Verify instantiated
+
+docker exec -it cli bash
+
+echo $CORE_PEER_ADDRESS
+peer chaincode list -C mychannel --instantiated
+
+eer chaincode query -C mychannel -n mycc -c '{"Args":["query","a"]}'
+
+peer chaincode invoke -o orderer.example.com:7050 --tls true \
+   --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto\
+   /ordererOrganizations/example.com/orderers/orderer.example.com/msp\
+   /tlscacerts/tlsca.example.com-cert.pem -C mychannel -n mycc \
+   --peerAddresses peer0.org1.example.com:9051 --tlsRootCertFiles \
+   /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations\
+   /org1.example.com/peers/peer0.org1.example.com/tls/ca.crt \
+   --peerAddresses peer0.org2.example.com:9051 --tlsRootCertFiles \
+   /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations\
+   /org2.example.com/peers/peer0.org2.example.com/tls/ca.crt \
+   -c '{"Args":["invoke","a","b","10"]}'
+
+peer chaincode query -C mychannel -n mycc -c '{"Args":["query","a"]}'
+

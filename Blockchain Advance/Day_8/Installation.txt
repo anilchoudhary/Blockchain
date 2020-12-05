@@ -1,0 +1,33 @@
+In your Ubuntu terminal, enter the following commands:
+sudo apt-get install curl
+sudo apt-get install golang-go
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
+sudo apt-get install nodejs
+sudo apt-get install npm
+sudo apt-get install python
+sudo apt-get install docker
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt-get update
+apt-cache policy docker-ce
+sudo apt-get install -y docker-ce
+sudo apt-get install docker-compose
+sudo apt-get upgrade
+With that, our environment is set up.
+
+Next, we're going to download the samples of Fabric that have already been prepared to test it out. Enter the following two commands in your terminal. 
+sudo curl -sSL https://goo.gl/6wtTN5 | sudo bash -s 1.1.0
+sudo chmod 777 -R fabric-samples
+So now we have the samples. 
+
+We're going to make sure that everything runs by running our first network. Change into the first-network directory and run the generate script that will create the certificates and keys for the entities that are going to exist on our blockchain. This will also create the genesis block (the first block on the blockchain), among other things.
+cd fabric-samples/first-network
+sudo ./byfn.sh generate
+
+​Now bring the blockchain network up with the following command.
+sudo ./byfn.sh up
+If everything worked, then you successfully created your first Fabric network! Congratulations. Let's bring it down for now.
+sudo ./byfn.sh down
+
+Okay, so we know our computer can successfully use and deploy Hyperledger Fabric blockchain networks, but what now?
